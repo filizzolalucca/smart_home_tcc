@@ -4,6 +4,7 @@
 
 int ultimaLeituraSensores = 0;
 int ultimaLeituraTempUmidade = 0;
+extern bool modoSeguranca;
 
 void handleDigitalSensorTEMP() {
   if ((millis() - ultimaLeituraTempUmidade) > 60000) {
@@ -33,12 +34,21 @@ void enviaDHT() {
   }
 }
 
+bool ultimoStatusS1 = false;
+bool ultimoStatusBTN = false;
+
 void leituraSensorDigital() {
   bool statusS1 = digitalRead(S1);
-  feedS1->save(statusS1);
+  if (modoSeguranca && statusS1 != ultimoStatusS1) {
+    feedS1->save(statusS1);
+    ultimoStatusS1 = statusS1;
+  }
 }
 
 void leituraSensorBTN() {
   bool statusBTN = digitalRead(BT);
-  feedBTN->save(statusBTN);
+  if (statusBTN != ultimoStatusBTN) {
+    feedBTN->save(statusBTN);
+    ultimoStatusBTN = statusBTN;
+  }
 }

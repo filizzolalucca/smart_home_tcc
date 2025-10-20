@@ -27,17 +27,21 @@ void atualizaL3() {
 }
 
 void gerenciaModoSeguranca() {
-  if (modoSeguranca != modoSegurancaAnterior) {
+    static bool s1Resetado = false;
+
+ if (modoSeguranca != modoSegurancaAnterior) {
     modoSegurancaAnterior = modoSeguranca;
 
     if (!modoSeguranca) {
       tempoDesligamentoSeguranca = millis();
+      s1Resetado = false;
     }
   }
 
-  if (!modoSeguranca && (millis() - tempoDesligamentoSeguranca) >= 10000) {
+  if (!modoSeguranca && !s1Resetado && (millis() - tempoDesligamentoSeguranca) >= 10000) {
     feedS1->save(0);
-    tempoDesligamentoSeguranca = millis() + 999999;
+    s1Resetado = true;
+    Serial.println(">>> Modo segurança desligado, resetando S1 para 0");
   }
 }
 
